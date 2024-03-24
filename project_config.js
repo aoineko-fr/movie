@@ -99,7 +99,7 @@ RawFiles = [];
 
 const zeroPad = (num, places) => String(num).padStart(places, '0')
 let idx = 0; 
-for(let img = 66; img <= 310; img++)
+for(let img = 66; img <= 335; img++)
 	RawFiles.push({ segment: 6 + 3 * idx++, file: `content/img/${zeroPad(img, 4)}.bin` });
 
 //-- Use automatic banked call and trampoline functions (boolean). For mapped ROM
