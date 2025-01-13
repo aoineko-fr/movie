@@ -1,5 +1,5 @@
 // ____________________________
-// ██▀▀█▀▀██▀▀▀▀▀▀▀█▀▀█        │   ▄▄▄                ▄▄      
+// ██▀▀█▀▀██▀▀▀▀▀▀▀█▀▀█        │   ▄▄▄                ▄▄
 // ██  ▀  █▄  ▀██▄ ▀ ▄█ ▄▀▀ █  │  ▀█▄  ▄▀██ ▄█▄█ ██▀▄ ██  ▄███
 // █  █ █  ▀▀  ▄█  █  █ ▀▄█ █▄ │  ▄▄█▀ ▀▄██ ██ █ ██▀  ▀█▄ ▀█▄▄
 // ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀────────┘                 ▀▀
@@ -116,7 +116,7 @@
 // - VDP_INIT_ON .................. Force option to be enable
 // - VDP_INIT_AUTO ................ Determining the best value for the context
 // - VDP_INIT_DEFAULT ............. Keep default value
-#define VDP_INIT_50HZ				VDP_INIT_ON
+#define VDP_INIT_50HZ				VDP_INIT_DEFAULT
 
 //-----------------------------------------------------------------------------
 // V9990  MODULE
@@ -158,6 +158,13 @@
 #define INPUT_KB_UPDATE_MAX			8		// Last row to update (10 for numerical-pad, 8 otherwise)
 
 //-----------------------------------------------------------------------------
+// PADDLE MODULE
+//-----------------------------------------------------------------------------
+
+// Paddle module setting
+#define PADDLE_USE_CALIB			TRUE	// Add functions paddle calibration feature
+
+//-----------------------------------------------------------------------------
 // MEMORY MODULE
 //-----------------------------------------------------------------------------
 
@@ -165,6 +172,7 @@
 #define MEM_USE_FASTCOPY			FALSE	// Add support for fast-copy function (using unrolled-LDI loop)
 #define MEM_USE_FASTSET				FALSE	// Add support for fast-set function (using unrolled-LDI loop)
 #define MEM_USE_DYNAMIC				FALSE	// Add support for malloc style dynamic allocator
+#define MEM_USE_BUILTIN				TRUE	// Use SDCC built-in memcpy and memset function instead of MSXgl ones
 
 //-----------------------------------------------------------------------------
 // MSX-DOS MODULE
@@ -273,10 +281,21 @@
 // Top/bottom border position (in pixel)
 #define GAMEPAWN_BORDER_MIN_Y		0		// High border Y coordinade
 #define GAMEPAWN_BORDER_MAX_Y		192		// Low border Y coordinate
-#define GAMEPAWN_FORCE_SM1			FALSE	// Force the use sprite mode 1 (for MSX2) 
-#define GAMEPAWN_USE_VRAM_COL		TRUE	// Use VRAM to chech tile collision (use RAM buffer instead)
 #define GAMEPAWN_TILEMAP_WIDTH		32		// Width of the tiles map
 #define GAMEPAWN_TILEMAP_HEIGHT		24		// Height of the tiles map
+// Collision tilemap source
+// - GAMEPAWN_TILEMAP_SRC_AUTO .... Backward compatibility option
+// - GAMEPAWN_TILEMAP_SRC_RAM ..... Tilemap located in a buffer in RAM (best for performance)
+// - GAMEPAWN_TILEMAP_SRC_VRAM .... Tilemap located in VRAM (slow but don't need additionnal data)
+// - GAMEPAWN_TILEMAP_SRC_V9 ...... Tilemap located in V9990's VRAM
+#define GAMEPAWN_TILEMAP_SRC		GAMEPAWN_TILEMAP_SRC_RAM
+// Pawn's sprite mode
+// - GAMEPAWN_SPT_MODE_AUTO ....... Backward compatibility option
+// - GAMEPAWN_SPT_MODE_MSX1 ....... Sprite Mode 1 (MSX1 screens)
+// - GAMEPAWN_SPT_MODE_MSX2 ....... Sprite Mode 2 (MSX2 screens)
+// - GAMEPAWN_SPT_MODE_V9_P1 ...... V9990 sprite in P1 mode
+// - GAMEPAWN_SPT_MODE_V9_P2 ...... V9990 sprite in P2 mode
+#define GAMEPAWN_SPT_MODE			GAMEPAWN_SPT_MODE_MSX1
 
 //-----------------------------------------------------------------------------
 // GAME MENU MODULE
@@ -330,6 +349,7 @@
 // Allow horizontal and/or vertical scrolling
 #define SCROLL_HORIZONTAL			TRUE	// Activate horizontal scrolling
 #define SCROLL_VERTICAL				TRUE	// Activate vertical scrolling
+#define SCROLL_FORCE_UPDATE			FALSE	// Force to update layout table even when no scrolling aoccurs
 // Source data info
 #define SCROLL_SRC_X				64		// Start X coordinate of the source data
 #define SCROLL_SRC_Y				0		// Start Y coordinate of the source data
@@ -493,6 +513,12 @@
 // - ZX0_MODE_MEGA ................ Mega routine: 673 bytes, about 28% faster
 #define ZX0_MODE					ZX0_MODE_STANDARD
 
+// LZ48 compression
+// - LZ48_MODE_STANDARD ........... Standard routine
+// - LZ48_MODE_SPEED .............. Version optimized for speed
+// - LZ48_MODE_SIZE ............... Version optimized for size
+#define LZ48_MODE					LZ48_MODE_STANDARD
+
 // MSXi compressor support
 #define MSXi_USE_COMP_NONE			TRUE
 #define MSXi_USE_COMP_CROP16		TRUE
@@ -560,15 +586,18 @@
 #define QRCODE_TINY_MASK 			QRCODE_MASK_0
 
 //-----------------------------------------------------------------------------
-// DEBUG
+// DEBUG & PROFILE
 //-----------------------------------------------------------------------------
 
-// Profiler method
-// - DEBUG_DISABLE ................ No profiler
-// - DEBUG_OPENMSX ................ Support for openMSX default debugger (no profiler)
-// - DEBUG_OPENMSX_G .............. Grauw profile script for openMSX
-// - DEBUG_OPENMSX_S .............. Salutte profile script for openMSX
-// - DEBUG_OPENMSX_P .............. PVM debug script for openMSX (no profiler)
-// - DEBUG_EMULICIOUS ............. Profile script for Emulicious
+// Debugger options
+// - DEBUG_DISABLE ................ No debug tool
+// - DEBUG_EMULICIOUS ............. Debug features for Emulicious
+// - DEBUG_OPENMSX ................ Debug features for openMSX using 'debugdevice' extension
+// - DEBUG_OPENMSX_P .............. Debug features for openMSX using PVM script (tools/script/openMSX/debugger_pvm.tcl)
 #define DEBUG_TOOL					DEBUG_DISABLE
-#define PROFILE_LEVEL				10 
+// Profiler options
+// - PROFILE_DISABLE .............. No profile tool
+// - PROFILE_OPENMSX_G ............ Profiler features for openMSX using Grauw script (tools/script/openMSX/profiler_grauw.tcl)
+// - PROFILE_OPENMSX_S ............ Profiler features for openMSX using Salutte script (tools/script/openMSX/profiler_salutte.tcl)
+#define PROFILE_TOOL				PROFILE_DISABLE
+#define PROFILE_LEVEL				10

@@ -15,7 +15,7 @@
 // DoMake    = true;	//-- Link all the project and engine source code (boolean). Merge all REL into one IHX file
 // DoPackage = true;	//-- Generate final binary file (boolean). Binarize the IHX file
 // DoDeploy  = true;	//-- Gathering of all files necessary for the program to work (boolean). Depends on the type of target
-// DoRun     = false;	//-- Start the program automatically at the end of the build (boolean)
+DoRun     = true;	//-- Start the program automatically at the end of the build (boolean)
 
 //*****************************************************************************
 // PROJECT SETTINGS
@@ -31,7 +31,7 @@ ProjModules = [ ProjName ];
 // ProjSegments = "";
 
 //-- List of library modules to build (array)
-LibModules = [ "system", "vdp", "print", "input" ];
+LibModules = [ "mglv/mglv_player", "system", "vdp", "print", "input", "bios" ];
 
 //-- Additional sources to be compiled and linked with the project (array)
 // AddSources = [];
@@ -73,10 +73,26 @@ Machine = "2";
 //   - ROM_KONAMI_SCC   .rom    Konami MegaROM SCC (aka Konami5): 8 KB segments for a total of 64 KB to 2 MB
 //   - ROM_NEO8         .rom    NEO-8: 8 KB segments for a total of 1 MB to 32 MB
 //   - ROM_NEO16        .rom    NEO-16: 16 KB segments for a total of 1 MB to 64 MB
-Target = "ROM_NEO8";
+//   - ROM_YAMANOOTO    .rom    Yamanooto: 8 KB segments for a total of 2 to 8 MB
+//   - ROM_ASCII16X     .rom    ACSII16-X: 16 KB segments for a total of 8 MB to 64 MB
+Target = "ROM_NEO16";
 
 //-- ROM mapper total size in KB (number). Must be a multiple of 8 or 16 depending on the mapper type (from 64 to 4096)
 ROMSize = 8 * 1024;
+
+//-- Check for ROM boot skipping if a given key is pressed (boolean)
+ROMSkipBoot = true;
+
+//-- The key to be check for ROM boot skipping (string). Key must be from keyboard row #7.
+//   - F4
+//   - F5
+//   - ESC
+//   - TAB
+//   - STOP
+//   - BS
+//   - SELECT
+//   - RETURN
+ROMSkipBootKey = "ESC";
 
 //-- Postpone the ROM startup to let the other ROMs initialize like Disk controller or Network cartridge (boolean)
 // ROMDelayBoot = false;
@@ -95,12 +111,19 @@ AddROMSignature = true;
 CustomISR = "VBLANK";
 
 //-- List of raw data files to be added to final binary (array). Each entry must be in the following format: { offset:0x0000, file:"myfile.bin" }
-RawFiles = [];
+if (Target == "ROM_NEO8")
+	RawFiles = [{ segment: 6, file: `content/JoyAndHeron.mglv` }];
+else if (Target == "ROM_NEO16")
+	RawFiles = [{ segment: 3, file: `content/JoyAndHeron.mglv` }];
+else if (Target == "ROM_YAMANOOTO")
+	RawFiles = [{ segment: 4, file: `content/JoyAndHeron.mglv` }];
+else if (Target == "ROM_ASCII16X")
+	RawFiles = [{ segment: 2, file: `content/JoyAndHeron.mglv` }];
 
-const zeroPad = (num, places) => String(num).padStart(places, '0')
-let idx = 0; 
-for(let img = 66; img <= 335; img++)
-	RawFiles.push({ segment: 6 + 3 * idx++, file: `content/img/${zeroPad(img, 4)}.bin` });
+// const zeroPad = (num, places) => String(num).padStart(places, '0')
+// let idx = 0; 
+// for(let img = 66; img <= 335; img++)
+// 	RawFiles.push({ segment: 6 + 3 * idx++, file: `content/img/${zeroPad(img, 4)}.bin` });
 
 //-- Use automatic banked call and trampoline functions (boolean). For mapped ROM
 // BankedCall = 0;
@@ -144,10 +167,10 @@ AppID = "MV";
 // BuildLibrary = false;
 
 //-- Prepare program for debug (boolean)
-// Debug = false;
+Debug = true;
 
 //-- Move debug symbols to deployement folder (boolean)
-// DebugSymbols = false;
+DebugSymbols = true;
 
 //-- Allow compiler to generate undocumented Z80 instructions (boolean)
 // AllowUndocumented = false;
@@ -193,6 +216,9 @@ CompileComplexity = "Default";
 //-- Localization structure name (string)
 // LocStruct = "g_LocData";
 
+//-- Split socalization data and definitions in different files (boolean)
+// LocSplitDef = false;
+
 //-- Package all segments into a lib file to reduce the number of files to link (boolean)
 // PackSegments = false;
 
@@ -223,7 +249,7 @@ Verbose = true;
 // Emul60Hz       = false;				//-- Force the emulated machine to be at 60 Hz (boolean)
 // EmulFullScreen = false;				//-- Force the emulator to start in fullscreen mode (boolean)
 // EmulMute       = false;				//-- Disable emulator sound (boolean)
-// EmulDebug      = false;				//-- Start emulator debugger with program launch (boolean)
+EmulDebug      = true;				//-- Start emulator debugger with program launch (boolean)
 EmulTurbo      = false;				//-- Start emulator in turbo mode (boolean)
 
 //-- Emulator extra parameters to be add to command-line (string). Emulator sotfware specific
