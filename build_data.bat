@@ -13,11 +13,11 @@ set MSXtk=%Tools%\MSXtk\bin
 set Dest=content
 
 if not exist %Dest% ( md %Dest% )
-if not exist %Dest%/img ( md %Dest%/img )
+@REM if not exist %Dest%/img ( md %Dest%/img )
 
 @REM for %%I in (datasrc/img/*.png) do (
 @REM 	%MSXtk%\MSXimg.exe datasrc/img/%%I -pos 0 0 -size 256 144 -bpc 4 -format bin -pal custom -out %Dest%/img/%%~nI.bin
 @REM )
 
-@REM %MSXtk%\MSXimg.exe datasrc/img -out content/JoyAndHeron.h -mode mglv -format c -size 256 144 -bpc 4 -pal msx1
-%MSXtk%\MSXimg.exe datasrc/img -out content/JoyAndHeron.mglv -mode mglv -format bin -size 256 144 -bpc 4 -pal msx1 -mglvSeg 16 -mglvTime 6 -mglvLoop -mglvMinSkip 8 -mglvMinFill 16
+%MSXtk%\MSXimg.exe datasrc/img -out content/JoyAndHeron.h -mode mglv -format c -size 256 144 -bpc 4 -pal msx1 -mglvSeg 16 -mglvTime 6 -mglvLoop -mglvMinSkip 8 -mglvMinFill 8
+%MSXtk%\MSXimg.exe datasrc/img -out content/JoyAndHeron.mglv -mode mglv -format bin -size 256 144 -bpc 4 -pal msx1 -mglvSeg 16 -mglvTime 6 -mglvLoop -mglvMinSkip 8 -mglvMinFill 8

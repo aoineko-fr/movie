@@ -159,6 +159,7 @@ void main()
 	VDP_SetColor(COLOR_BLACK);
 	VDP_EnableDisplay(FALSE);
 	VDP_ClearVRAM();
+	VDP_EnableSprite(FALSE);
 
 	MGLV_Init(MovieEventCallback);
 	MGLV_SetFrameDuration(5);
@@ -175,8 +176,8 @@ void main()
 	while(1)
 	{
 		WaitVBLank();
-		DisableInterrupt();
+		// DisableInterrupt();
 		MGLV_Decode();
-		EnableInterrupt();
+		// EnableInterrupt();
 	}
 }
